@@ -13,8 +13,8 @@ func Test_GoogleUnencryptedStorageBucket(t *testing.T) {
 	var tests = []struct {
 		name                  string
 		source                string
-		mustIncludeResultCode scanner.CheckCode
-		mustExcludeResultCode scanner.CheckCode
+		mustIncludeResultCode scanner.RuleID
+		mustExcludeResultCode scanner.RuleID
 	}{
 		{
 			name: "check google_storage_bucket with no encryption block",
@@ -30,17 +30,7 @@ resource "google_storage_bucket" "my-bucket" {
 resource "google_storage_bucket" "my-bucket" {
 	encryption {}	
 }`,
-			mustIncludeResultCode: checks.GoogleUnencryptedStorageBucket,
-		},
-		{
-			name: "check google_storage_bucket with empty encryption kms key name",
-			source: `
-resource "google_storage_bucket" "my-bucket" {
-	encryption {
-		default_kms_key_name = ""
-	}	
-}`,
-			mustIncludeResultCode: checks.GoogleUnencryptedStorageBucket,
+			mustExcludeResultCode: checks.GoogleUnencryptedStorageBucket,
 		},
 		{
 			name: "check google_storage_bucket with non-empty encryption kms key name",
