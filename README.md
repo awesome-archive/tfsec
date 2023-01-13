@@ -1,17 +1,38 @@
 <p align="center">
-  <img width="463" src="./logo.png">
+  <img width="354" src=".github/images/tfsec_worded.png">
 </p>
 
-# tfsec
+[![GoReportCard](https://goreportcard.com/badge/github.com/aquasecurity/tfsec)](https://goreportcard.com/report/github.com/aquasecurity/tfsec)
+[![Join Our Slack](https://img.shields.io/badge/Slack-Join-green)](https://slack.aquasec.com/)
+[![Docker Build](https://img.shields.io/docker/v/tfsec/tfsec?label=docker)](https://hub.docker.com/r/tfsec/tfsec)
+[![Homebrew](https://img.shields.io/badge/dynamic/json.svg?url=https://formulae.brew.sh/api/formula/tfsec.json&query=$.versions.stable&label=homebrew)](https://formulae.brew.sh/formula/tfsec)
+[![Chocolatey](https://img.shields.io/chocolatey/v/tfsec)](https://chocolatey.org/packages/tfsec)
+[![AUR version](https://img.shields.io/aur/version/tfsec-bin)](https://aur.archlinux.org/packages/tfsec-bin)
+[![VScode Extension](https://img.shields.io/visual-studio-marketplace/v/tfsec.tfsec?label=vscode)](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec)
 
-[![Travis Build Status](https://travis-ci.org/liamg/tfsec.svg?branch=master)](https://travis-ci.org/liamg/tfsec)
-[![GoReportCard](https://goreportcard.com/badge/github.com/liamg/tfsec)](https://goreportcard.com/report/github.com/liamg/tfsec)
-[![Open Source Helpers](https://www.codetriage.com/liamg/tfsec/badges/users.svg)](https://www.codetriage.com/liamg/tfsec)
-[![Github Release](https://img.shields.io/github/release/liamg/tfsec.svg)](https://github.com/liamg/tfsec/releases)
-[![GitHub All Releases](https://img.shields.io/github/downloads/liamg/tfsec/total)](https://github.com/liamg/tfsec/releases)
+tfsec uses static analysis of your terraform code to spot potential misconfigurations.
 
-tfsec uses static analysis of your terraform templates to spot potential
-security issues. Now with terraform v0.12+ support.
+## Features
+
+- :cloud: Checks for misconfigurations across all major (and some minor) cloud providers
+- :no_entry: Hundreds of built-in rules
+- :nesting_dolls: Scans modules (local and remote)
+- :heavy_plus_sign: Evaluates HCL expressions as well as literal values
+- :arrow_right_hook: Evaluates Terraform functions e.g. `concat()`
+- :link: Evaluates relationships between Terraform resources
+- :toolbox: Compatible with the Terraform CDK
+- :no_good: Applies (and embellishes) user-defined Rego policies
+- :page_with_curl: Supports multiple output formats: lovely (default), JSON, SARIF, CSV, CheckStyle, JUnit, text, Gif.
+- :hammer_and_wrench: Configurable (via CLI flags and/or config file)
+- :zap: Very fast, capable of quickly scanning huge repositories
+- :electric_plug: Plugins for popular IDEs available ([JetBrains](https://plugins.jetbrains.com/plugin/18687-tfsec-findings-explorer), [VSCode](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec) and [Vim](https://github.com/aquasecurity/vim-tfsec))
+- :house_with_garden: Community-driven - come and chat with us [on Slack](https://slack.aquasec.com/)!
+
+## Recommended by Thoughtworks
+
+Rated _Adopt_ by the [Thoughtworks Tech Radar](https://www.thoughtworks.com/en-gb/radar/tools/tfsec):
+
+> For our projects using Terraform, tfsec has quickly become a default static analysis tool to detect potential security risks. It's easy to integrate into a CI pipeline and has a growing library of checks against all of the major cloud providers and platforms like Kubernetes. Given its ease of use, we believe tfsec could be a good addition to any Terraform project.
 
 ## Example Output
 
@@ -19,28 +40,50 @@ security issues. Now with terraform v0.12+ support.
 
 ## Installation
 
-Install with brew/linuxbrew:
+Install with [brew/linuxbrew](https://brew.sh)
 
 ```bash
-brew tap liamg/tfsec
-brew install liamg/tfsec/tfsec
+brew install tfsec
 ```
 
-You can also grab the binary for your system from the [releases page](https://github.com/liamg/tfsec/releases).
+Install with [Chocolatey](https://chocolatey.org/)
+
+```cmd
+choco install tfsec
+```
+
+Install with [Scoop](https://scoop.sh/)
+
+```cmd
+scoop install tfsec
+```
+Bash script (Linux):
+
+```console
+curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+```
+
+You can also grab the binary for your system from the [releases page](https://github.com/aquasecurity/tfsec/releases).
 
 Alternatively, install with Go:
 
 ```bash
-env GO111MODULE=on go get -u github.com/liamg/tfsec/cmd/tfsec
+go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
 ```
+
+Please note that using `go install` will install directly from the `master` branch and version numbers will not be reported via `tfsec --version`.
+
+### Signing
+
+The binaries on the [releases page](https://github.com/aquasecurity/tfsec/releases) are signed with the tfsec signing key `D66B222A3EA4C25D5D1A097FC34ACEFB46EC39CE`
+
+Form more information check the [signing page](SIGNING.md) for instructions on verification.
 
 ## Usage
 
-tfsec will recursively scan the specified directory. If no directory is
-specified, the current working directory will be used.
+tfsec will scan the specified directory. If no directory is specified, the current working directory will be used.
 
-The exit status will be non zero if problems are found, otherwise the
-exit status will be zero.
+The exit status will be non-zero if tfsec finds problems, otherwise the exit status will be zero.
 
 ```bash
 tfsec .
@@ -48,51 +91,56 @@ tfsec .
 
 ## Use with Docker
 
-As an alternative to installing and running tfsec on your system, you may
-run tfsec in a Docker container.
+As an alternative to installing and running tfsec on your system, you may run tfsec in a Docker container.
 
-To build:
+There are a number of Docker options available
 
-```bash
-docker build -t tfsec .
-```
+| Image Name | Base | Comment |
+|------------|------|---------|
+|[aquasec/tfsec](https://hub.docker.com/r/aquasec/tfsec)|alpine|Normal tfsec image|
+|[aquasec/tfsec-alpine](https://hub.docker.com/r/aquasec/tfsec-alpine)|alpine|Exactly the same as aquasec/tfsec, but for those whole like to be explicit|
+|[aquasec/tfsec-ci](https://hub.docker.com/r/aquasec/tfsec-ci)|alpine|tfsec with no entrypoint - useful for CI builds where you want to override the command|
+|[aquasec/tfsec-scratch](https://hub.docker.com/r/aquasec/tfsec-scratch)|scratch|An image built on scratch - nothing frilly, just runs tfsec|
 
 To run:
 
 ```bash
-docker run --rm -it -v "$(pwd):/workdir" tfsec .
+docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
 ```
 
-## Features
+## Use with Visual Studio Code
 
-- Checks for sensitive data inclusion across all providers
-- Checks for violations of AWS, Azure and GCP security best practice recommendations
-- Scans modules (currently only local modules are supported)
-- Evaluates expressions as well as literal values
+A Visual Studio Code extension is being developed to integrate with tfsec results. More information can be found on the [tfsec Marketplace page](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec)
+
+## Use as GitHub Action
+
+If you want to run tfsec on your repository as a GitHub Action, you can use [https://github.com/aquasecurity/tfsec-pr-commenter-action](https://github.com/aquasecurity/tfsec-pr-commenter-action).
+
+## Use as an Azure DevOps Pipelines Task
+
+You can now install the [official tfsec task](https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.tfsec-official). Please raise any issues/feature requests on the [task repository](https://github.com/aquasecurity/tfsec-azure-pipelines-task).
 
 ## Ignoring Warnings
 
 You may wish to ignore some warnings. If you'd like to do so, you can
-simply add a comment containing `tfsec:ignore:<CODE>` to the offending
-line in your templates. If the problem refers to a block of code, such
-as a multiline string, you can add the comment on the line above the
-block, by itself.
+simply add a comment containing `tfsec:ignore:<rule>` to the offending
+line in your templates. Alternatively, you can add the comment to the line above the block containing the issue, or to the module block to ignore all occurrences of an issue inside the module.
 
 For example, to ignore an open security group rule:
 
-```hcl
+```terraform
 resource "aws_security_group_rule" "my-rule" {
     type = "ingress"
-    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:AWS006
+    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-vpc-no-public-ingress-sgr
 }
 ```
 
 ...or...
 
-```hcl
+```terraform
 resource "aws_security_group_rule" "my-rule" {
     type = "ingress"
-    #tfsec:ignore:AWS006
+    #tfsec:ignore:aws-vpc-no-public-ingress-sgr
     cidr_blocks = ["0.0.0.0/0"]
 }
 ```
@@ -100,54 +148,93 @@ resource "aws_security_group_rule" "my-rule" {
 If you're not sure which line to add the comment on, just check the
 tfsec output for the line number of the discovered problem.
 
+You can ignore multiple rules by concatenating the rules on a single line:
+
+```terraform
+#tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-enable-bucket-logging
+resource "aws_s3_bucket" "my-bucket" {
+  bucket = "foobar"
+  acl    = "private"
+}
+```
+
+### Expiration Date
+You can set expiration date for `ignore` with `yyyy-mm-dd` format. This is a useful feature when you want to ensure ignored issue won't be forgotten and should be revisited in the future.
+```
+#tfsec:ignore:aws-s3-enable-bucket-encryption:exp:2025-01-02
+```
+Ignore like this will be active only till `2025-01-02`, after this date it will be deactivated.
+
+## Disable checks
+
+You may wish to exclude some checks from running. If you'd like to do so, you can
+simply add new argument `-e check1,check2,etc` to your cmd command
+
+```bash
+tfsec . -e general-secrets-sensitive-in-variable,google-compute-disk-encryption-customer-keys
+```
+
+## Including values from .tfvars
+
+You can include values from a tfvars file in the scan,  using, for example: `--tfvars-file terraform.tfvars`.
+
 ## Included Checks
 
-Currently, checks are mostly limited to AWS/Azure/GCP resources, but
-there are also checks which are provider agnostic.
+tfsec supports many popular cloud and platform providers
 
-| Code    | Provider | Description |
-|---------|----------|-------------|
-| GEN001  | *        | Potentially sensitive data stored in "default" value of variable.
-| GEN002  | *        | Potentially sensitive data stored in local value.
-| GEN003  | *        | Potentially sensitive data stored in block attribute.
-| AWS001  | aws      | S3 Bucket has an ACL defined which allows public access.
-| AWS002  | aws      | S3 Bucket does not have logging enabled.
-| AWS003  | aws      | AWS Classic resource usage.
-| AWS004  | aws      | Use of plain HTTP.
-| AWS005  | aws      | Load balancer is exposed to the internet.
-| AWS006  | aws      | An ingress security group rule allows traffic from `/0`.
-| AWS007  | aws      | An egress security group rule allows traffic to `/0`.
-| AWS008  | aws      | An inline ingress security group rule allows traffic from `/0`.
-| AWS009  | aws      | An inline egress security group rule allows traffic to `/0`.
-| AWS010  | aws      | An outdated SSL policy is in use by a load balancer.
-| AWS011  | aws      | A resource is marked as publicly accessible.
-| AWS012  | aws      | A resource has a public IP address.
-| AWS013  | aws      | Task definition defines sensitive environment variable(s).
-| AWS014  | aws      | Launch configuration with unencrypted block device.
-| AWS015  | aws      | Unencrypted SQS queue.
-| AWS016  | aws      | Unencrypted SNS topic.
-| AWS017  | aws      | Unencrypted S3 bucket.
-| AWS018  | aws      | Missing description for security group/security group rule.
-| AZU001  | azurerm  | An inbound network security rule allows traffic from `/0`.
-| AZU002  | azurerm  | An outbound network security rule allows traffic to `/0`.
-| AZU003  | azurerm  | Unencrypted managed disk.
-| AZU004  | azurerm  | Unencrypted data lake store.
-| AZU005  | azurerm  | Password authentication in use instead of SSH keys.
-| GCP001  | google   | Unencrypted compute disk.
-| GCP002  | google   | Unencrypted storage bucket.
-| GCP003  | google   | An inbound firewall rule allows traffic from `/0`.
-| GCP004  | google   | An outbound firewall rule allows traffic to `/0`.
+| Checks                                                                                  |
+|:----------------------------------------------------------------------------------------|
+| [AWS Checks](https://aquasecurity.github.io/tfsec/latest/checks/aws/)                   |
+| [Azure Checks](https://aquasecurity.github.io/tfsec/latest/checks/azure/)               |
+| [GCP Checks](https://aquasecurity.github.io/tfsec/latest/checks/google/)                |
+| [CloudStack Checks](https://aquasecurity.github.io/tfsec/latest/checks/cloudstack/)     |
+| [DigitalOcean Checks](https://aquasecurity.github.io/tfsec/latest/checks/digitalocean/) |
+| [GitHub Checks](https://aquasecurity.github.io/tfsec/latest/checks/github/)             |
+| [Kubernetes Checks](https://aquasecurity.github.io/tfsec/latest/checks/kubernetes/)     |
+| [OpenStack Checks](https://aquasecurity.github.io/tfsec/latest/checks/openstack/)       |
+| [Oracle Checks](https://aquasecurity.github.io/tfsec/latest/checks/oracle/)             |
 
 ## Running in CI
 
-tfsec is designed for running in a CI pipeline. For this reason it will
-exit with a non-zero exit code if a potential problem is detected.
-You may wish to run tfsec as part of your build without coloured
-output. You can do this using `--no-colour` (or `--no-color` for our
-American friends).
+tfsec is designed for running in a CI pipeline. You may wish to run tfsec as part of your build without coloured
+output. You can do this using `--no-colour` (or `--no-color` for our American friends).
+
+## Output options
+
+You can output tfsec results as JSON, CSV, Checkstyle, Sarif, JUnit or just plain old human-readable format. Use the `--format` flag
+to specify your desired format.
+
+## GitHub Security Alerts
+If you want to integrate with Github Security alerts and include the output of your tfsec checks you can use the [tfsec-sarif-action](https://github.com/marketplace/actions/run-tfsec-with-sarif-upload) Github action to run the static analysis then upload the results to the security alerts tab.
+
+The alerts generated for [tfsec-example-project](https://github.com/tfsec/tfsec-example-project) look like this.
+
+![github security alerts](codescanning.png)
+
+When you click through the alerts for the branch, you get more information about the actual issue.
+
+![github security alerts](scanningalert.png)
+
+For more information about adding security alerts, check [the GitHub documentation](https://docs.github.com/en/code-security/repository-security-advisories/about-github-security-advisories-for-repositories)
 
 ## Support for older terraform versions
 
 If you need to support versions of terraform which use HCL v1
 (terraform <0.12), you can use `v0.1.3` of tfsec, though support is
 very limited and has fewer checks.
+
+## Contributing
+
+We always welcome contributions; big or small, it can be documentation updates, adding new checks or something bigger. Please check the [Contributing Guide](CONTRIBUTING.md) for details on how to help out.
+
+### Some People who have contributed
+
+<a href = "https://github.com/aquasecurity/tfsec/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=aquasecurity/tfsec"/>
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
+
+`tfsec` is an [Aqua Security](https://aquasec.com) open source project.
+Learn about our open source work and portfolio [here](https://www.aquasec.com/products/open-source-projects/).
+Join the community, and talk to us about any matter in [GitHub Discussion](https://github.com/aquasecurity/tfsec/discussions) or [Slack](https://slack.aquasec.com).

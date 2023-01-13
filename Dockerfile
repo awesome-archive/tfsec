@@ -1,17 +1,15 @@
-# pinned version of the Alpine-tagged 'go' image
-FROM golang:1.13-alpine
+FROM alpine:latest
 
-# grab tfsec from GitHub (taken from README.md)
-RUN env GO111MODULE=on go get -u github.com/liamg/tfsec/cmd/tfsec && mkdir /workdir && chown -R nobody /workdir
+# install git
+RUN apk add --no-cache git
 
-# use a non-privileged user
-USER nobody
+COPY tfsec /usr/bin/tfsec
 
-# work somewhere where we can write
-WORKDIR /workdir
+## use a non-privileged user
+RUN adduser -D tfsec
+USER tfsec
 
 # set the default entrypoint -- when this container is run, use this command
 ENTRYPOINT [ "tfsec" ]
-
-# as we specified an entrytrypoint, this is appended as an argument (i.e., `tfsec --help`)
+# as we specified an entrypoint, this is appended as an argument (i.e., `tfsec --help`)
 CMD [ "--help" ]
